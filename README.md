@@ -1,7 +1,7 @@
 # Redox Flow Battery Control System
 
 
-![](https://www.flaticon.com/svg/static/icons/svg/3220/3220892.svg)
+![](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/QtIcons/battery-charge.png?raw=true)
 
   > ### This project provides a full operation system, this project is a combination of hardware and software, a python code will be used as a controlling software.
 
