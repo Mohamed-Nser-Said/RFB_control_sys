@@ -3,7 +3,7 @@
 
 ![](https://www.flaticon.com/svg/static/icons/svg/3220/3220892.svg)
 
-  > ### The aim of this project is to provide a full operation system, this project is a combination of hardware adn software, these hardware will be controlled using python software.
+  > ### This project provides a full operation system, this project is a combination of hardware and software, a python code will be used as a controlling software.
 
 ---
 
