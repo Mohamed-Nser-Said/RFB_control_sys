@@ -60,7 +60,10 @@ synchronous system).
 ---
 
   * ### GUI
-    the GUI was built using PySide2 module which is Qt for Python, to get PySide2 via pip by running: pip install PySide2.
+    the GUI was built using PySide2 module which is Qt for Python,
+    
+    get PySide2 via pip by running: pip install PySide2.
+    
     [for more information](https://wiki.qt.io/Qt_for_Python)
     
        **Main Dashboard** 
