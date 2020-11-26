@@ -5,8 +5,8 @@ from PySide2.QtCore import QSize, Qt
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QDoubleSpinBox, QGridLayout, \
     QMainWindow, QWidget, QPushButton, QHBoxLayout, QSlider, QLabel, QSizePolicy
-from QtController.controllerPump import PumpControl
-from QtView.NewWidget import BubbleWidget
+from thesis.QtController.controllerPump import PumpControl
+from thesis.QtView.NewWidget import BubbleWidget
 import time
 
 
@@ -46,12 +46,12 @@ class PowerQPushButton(QPushButton):
         if self.btn_state == True:
             self.setIcon(QIcon(r"../QtIcons/off.png"))
             self.parent().pump.start()
-            self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
+            # self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
 
         if self.btn_state == False:
             self.setIcon(QIcon(r"../QtIcons/on.png"))
             self.parent().pump.stop()
-            self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
+            # self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
 
 
 class DirectionQPushButton(QPushButton):
@@ -76,12 +76,12 @@ class DirectionQPushButton(QPushButton):
         if self.btn_state:
             self.setIcon(QIcon(r"../QtIcons/backward.png"))
             self.parent().pump.flow_direction("ccw")
-            self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
+            # self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
 
         if not self.btn_state:
             self.setIcon(QIcon(r"../QtIcons/forward.png"))
             self.parent().pump.flow_direction("cw")
-            self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
+            # self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
 
 
 class CloseQPushButton(QPushButton):
@@ -151,7 +151,7 @@ class ExternalQPushButton(QPushButton):
 class SpeedQSlider(QSlider):
     def __init__(self):
         super().__init__(Qt.Horizontal)
-        self.setMaximum(600)
+        self.setMaximum(300)
         self.setMinimum(0)
         self.setSingleStep(2)
         self.valueChanged.connect(self.value_changed)
@@ -171,9 +171,9 @@ class SpeedQDoubleSpinBox(QDoubleSpinBox):
     def __init__(self):
         super().__init__()
         self.setMinimum(0)
-        self.setMaximum(600)
+        self.setMaximum(300)
         self.setPrefix("speed in rpm : ")
-        self.setSingleStep(0.5)  # Or e.g. 0.5 for QDoubleSpinBox
+        self.setSingleStep(0.100)
         self.valueChanged.connect(self.value_changed)
 
         self.setSizePolicy(
@@ -186,24 +186,24 @@ class SpeedQDoubleSpinBox(QDoubleSpinBox):
 
     def value_changed(self, i):
         self.parent().pump.change_speed(new_speed=i)
-        self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
+        # self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
         self.parent().SpeedQSlider.setValue(i)
         self.parent().PumpBubbleWidget.value = i
-        self.parent().PumpBubbleWidget.color_value = int(i * 10 // 600)
+        self.parent().PumpBubbleWidget.color_value = int(i * 10 // 300)
 
 
-class InformationQLabel(QLabel):
-
-    def __init__(self):
-        super().__init__()
-        self.text = "no text"
-        self.setText(self.text)
-        self.setSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Preferred,
-        )
-    def sizeHint(self):
-        return QtCore.QSize(400, 50)
+# class InformationQLabel(QLabel):
+#
+#     def __init__(self):
+#         super().__init__()
+#         self.text = "no text"
+#         self.setText(self.text)
+#         self.setSizePolicy(
+#             QtWidgets.QSizePolicy.Preferred,
+#             QtWidgets.QSizePolicy.Preferred,
+#         )
+#     def sizeHint(self):
+#         return QtCore.QSize(400, 50)
 
 
 class PumpWidget(QWidget):
@@ -233,7 +233,7 @@ class PumpWidget(QWidget):
         self.SpeedQDoubleSpinBox = SpeedQDoubleSpinBox()
         self.SpeedQSlider = SpeedQSlider()
 
-        self.InformationQLabel = InformationQLabel()
+        # self.InformationQLabel = InformationQLabel()
 
         # connecting the SpeedQDoubleSpinBox and SpeedQSlider to the PumpBubbleWidget
         self.SpeedQDoubleSpinBox.valueChanged.connect(self.PumpBubbleWidget._trigger_refresh)
@@ -254,7 +254,7 @@ class PumpWidget(QWidget):
         g_layout.addLayout(h_layout1, 0, 0, 1, 2)
         g_layout.addWidget(self.SpeedQDoubleSpinBox, 2, 0)
         g_layout.addWidget(self.SpeedQSlider, 1, 0)
-        g_layout.addWidget(self.InformationQLabel, 3, 0)
+        # g_layout.addWidget(self.InformationQLabel, 3, 0)
         g_layout.addLayout(h_layout, 4, 1)
 
         self.setLayout(g_layout)

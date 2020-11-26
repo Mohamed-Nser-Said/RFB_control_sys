@@ -69,25 +69,26 @@ class MainWindow(QMainWindow):
         self.grid_layout = QGridLayout()
 
         v_layout = QtWidgets.QVBoxLayout()
-        self.pump_speed = BubbleWidget(text='Pump Speed')
+        #self.pump_speed = BubbleWidget(text='Pump Speed')
+
         self.battery_level = BubbleWidget(text='Battery Level')
         self.temp = BubbleWidget(icon=r"../QtIcons/temperature.png", text='Temperature')
         self.liquid_level = BubbleWidget(text='Liquid Level')
 
 
-        v_layout.addWidget(self.pump_speed)
+        #v_layout.addWidget(self.pump_speed)
         v_layout.addWidget(self.battery_level)
         v_layout.addWidget(self.temp)
         v_layout.addWidget(self.liquid_level)
 
         # self.graphx1 = ToolBar()
-        self.PumpWidget = AddWidget()
+        self.PumpWidget = PumpWidget()
         self.graphx3 = AddWidget()
         self.graphx4 = AddWidget()
         self.graphx5 = AddWidget()
         self.Notification = Notification()
 
-#        v_layout.addWidget(self.PumpWidget.PumpBubbleWidget)
+        v_layout.addWidget(self.PumpWidget.PumpBubbleWidget)
 
         # print(self.StateWidget.pump_speed.value)
 

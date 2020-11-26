@@ -1,3 +1,6 @@
+import serial
+ser = serial.Serial('COM5', baudrate=9600, timeout=1,bytesize=8,stopbits=2, parity=serial.PARITY_NONE )
+
 def xor(a, b):  # this function replicate the XOR operation
     if a != b:
         return "1"
@@ -7,7 +10,7 @@ def xor(a, b):  # this function replicate the XOR operation
 
 class DataConverting:  # this class for converting from/to hex, binary, decimal
 
-    def __init__(self, number):
+    def __init__(self, number=None):
         self.number = number
 
     def bin_to_hex(self):
@@ -92,12 +95,20 @@ class CRCGenerator:
         return self.change_format(self.crc)
 
     def get_full_code(self):
-        return self.change_format(self.full_code)
+          return self.change_format(self.full_code)
 
     @staticmethod
     def change_format(x):  # the purpose to change the message to a format acceptable by pump (MODBUS) **not finished**
-        value = [x[i:i + 2] for i in range(0, len(x), 2)]
-        return [f"0x{i}" for i in value]
+        # print(x)
+        # value = [x[i:i + 2] for i in range(0, len(x), 2)]
+        # return [f"0x{i}" for i in value]
+        # # ---------------------------
+
+        decimal = [int(DataConverting(x[i:i + 2]).hex_to_dec()) for i in range(0, len(x), 2)]
+        t = bytearray(decimal)
+        return t
+        # ----------------------------
+
 
     def __str__(self):
         return f"message = {self.message}\nCRC code = {self.crc}\nfull code = {self.full_code}"
@@ -123,7 +134,7 @@ class PumpControl:
                   f"{self._register_address['start_stop']}{self.data['start']}"
         self.modbus = CRCGenerator(message).generate.get_full_code()  # generating the crc code
         self.action.append(self.modbus)
-        print(self.modbus)
+        self.send_data()
         return self
 
     def stop(self):
@@ -131,6 +142,7 @@ class PumpControl:
                   f"{self._register_address['start_stop']}{self.data['stop']}"
         self.modbus = CRCGenerator(message).generate.get_full_code()  # generating the crc code
         self.action.append(self.modbus)
+        self.send_data()
         return self
 
     def flow_direction(self, direction="cc"):
@@ -138,6 +150,7 @@ class PumpControl:
                   f"{self._register_address['Running_direction']}{self.data[direction]}"
         self.modbus = CRCGenerator(message).generate.get_full_code()  # generating the crc code
         self.action.append(self.modbus)
+        self.send_data()
         return self
 
     def change_speed(self, new_speed=0):
@@ -147,15 +160,34 @@ class PumpControl:
                   f"{self._the_number_of_bit}{data}"
         self.modbus = CRCGenerator(message).generate.get_full_code()  # generating the crc code
         self.action.append(self.modbus)
+        self.send_data()
         return self
 
     def send_data(self):
-        pass
-        # print(self)
+        ser.write(self.modbus)
+
+    def __str__(self):
+        return str(self.modbus)
 
 
 if __name__ == "__main__":
     pump = PumpControl()
-    p = pump.start().change_speed(232).flow_direction("ccw").stop()
-    p = pump.start().change_speed(212.34).flow_direction("cw").stop()
-    print(p)
+    p = pump.start()
+    p.stop()
+    # p = pump.start().change_speed(232).flow_direction("ccw").stop()
+    # p = pump.start().change_speed(212.34).flow_direction("cw").stop()
+    # print(p)
+
+
+    # new_modbus =[]
+    # start = ['01', '06', '03', 'E8', '00', '01', 'C8', '7A']
+    # ccw = ['01', '06', '03', 'E9', '00', '00', '58', '7A']
+    # for i in ccw:
+    #     #new_modbus.append("0"+DataConverting(i).hex_to_bin()+"11")
+    #     new_modbus.append("0" + DataConverting(i).hex_to_bin()[::-1] + "1")
+    #     print(new_modbus)
+    # new_modbus = "".join(new_modbus)
+    # new_modbus = "1"*28 + new_modbus + "1"*28
+    # print(new_modbus)
+
+
