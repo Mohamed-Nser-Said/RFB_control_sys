@@ -1,12 +1,13 @@
-import sys
 
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtCore import QSize, Qt
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QDoubleSpinBox, QGridLayout, \
-    QMainWindow, QWidget, QPushButton, QHBoxLayout, QSlider, QLabel, QSizePolicy
-from thesis.QtController.controllerPump import PumpControl
-from thesis.QtView.NewWidget import BubbleWidget
+    QMainWindow, QWidget, QPushButton, QHBoxLayout, QSlider, QLabel, QSizePolicy,\
+    QDialog, QMessageBox
+from RedoxFlowProject.QtController.controllerPump import PumpControl
+from RedoxFlowProject.QtView.NewWidget import BubbleWidget
+import sys
 import time
 
 
@@ -43,12 +44,12 @@ class PowerQPushButton(QPushButton):
 
     def power_button_clicked(self, checked):
         self.btn_state = checked
-        if self.btn_state == True:
+        if self.btn_state:
             self.setIcon(QIcon(r"../QtIcons/off.png"))
             self.parent().pump.start()
             # self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
 
-        if self.btn_state == False:
+        if not self.btn_state:
             self.setIcon(QIcon(r"../QtIcons/on.png"))
             self.parent().pump.stop()
             # self.parent().InformationQLabel.setText(str(self.parent().pump.modbus))
@@ -298,7 +299,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
     PumpMainWindow = PumpWidget()
-
     # pal = QPalette()
     # pal.setColor(QPalette.Background, '#d1e3d3')
     # window.setAutoFillBackground(True)
