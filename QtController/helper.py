@@ -1,12 +1,105 @@
-def xor(a, b):  # this function replicate the XOR operation
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QMainWindow, QMessageBox
+from serial.tools import list_ports as ports
+from enum import Enum
+
+
+class PortManger:
+    """
+    this is port manger to check how many pumps are connected and return the specific port for each pump
+    """
+
+    def __init__(self, s="USB-SERIAL CH340"):
+        self.__port = [str(i) for i in ports.comports(include_links=False)]
+        self.__s = s
+
+    @property
+    def get_ports_list(self):
+        return self.__port
+
+    @property
+    def get_all_pump_ports_list(self):
+        return [self.get_master_pump_port, self.get_second_pump_port]
+
+    @property
+    def get_master_pump_port(self):
+        for _ in self.__port:
+            if self.__s in _:
+                return _[_.find("(") + 1:-1]
+        return None
+
+    @property
+    def get_master_pump_port_name_raw(self):
+        for _ in self.__port:
+            if self.__s in _:
+                return _
+        return None
+
+    def get_second_pump_port_name_raw(self):
+        p = []
+        for _ in self.__port:
+            if self.__s in _:
+                p.append(_)
+            if len(p) > 1:
+                return p[2]
+        return None
+
+    @property
+    def get_number_of_pump_connected(self):
+        num = []
+        for _ in self.__port:
+            if self.__s in _:
+                num.append(_)
+        return len(num)
+
+    @property
+    def get_second_pump_port(self):
+        num = []
+        for _ in self.__port:
+            if self.__s in _:
+                num.append(_)
+        if len(num) > 1:
+            return num[1][num[1].find("(") + 1:-1]
+        return None
+
+
+class ErrorMassage(QMainWindow):
+    """error handler for general use """
+
+    def __init__(self, title, message):
+        super().__init__()
+        self.setWindowIcon(QIcon(r"../QtIcons/warning.png"))
+        self.title = title
+        self.message = message
+        QMessageBox.warning(self, self.title, self.message)
+
+
+class IS(Enum):
+    UNI = 1
+    DUAL_CLONE = 2
+    DUAL_CUSTOM = 3
+
+
+class Pump(Enum):
+    MASTER = 1
+    SECOND = 2
+    BOTH = 0
+
+
+def xor(a, b):
+    """
+    this function replicate the XOR operation
+    """
     if a != b:
         return "1"
     else:
         return "0"
 
 
-class DataConverting:  # this class for converting from/to hex, binary, decimal
-
+class DataConverting:
+    """
+    this class for converting from/to hex, binary, decimal
+    """
     def __init__(self, number=None):
         self.number = number
 
@@ -29,7 +122,10 @@ class DataConverting:  # this class for converting from/to hex, binary, decimal
         return bin(int(self.number, 10))[2:].zfill(n_bits)
 
 
-def ieee754_converter(float_num):  # this function converts form float to Single-precision floating-point format
+def ieee754_converter(float_num):
+    """
+    this function converts form float to Single-precision floating-point format
+    """
     sign = "0"
     if abs(float_num) != float_num:  # check the sign
         sign = "1"
@@ -54,6 +150,11 @@ def ieee754_converter(float_num):  # this function converts form float to Single
 
 
 class CRCGenerator:
+    """
+        def generate(self):  # this function generates a crc code for a given message
+        crc = list("1" * 16)  # 16 bits register into hexadecimal FFFF
+        polynomial = "1010000000000001"   Polynomial: G(X)=X16+X15+X2+1
+    """
     def __init__(self, message=None):
         self.crc = None
         self.message = message
@@ -95,17 +196,71 @@ class CRCGenerator:
         return self.change_format(self.full_code)
 
     @staticmethod
-    def change_format(x):  # the purpose to change the message to a format acceptable by pump (MODBUS) **not finished**
-        # print(x)
-        # value = [x[i:i + 2] for i in range(0, len(x), 2)]
-        # return [f"0x{i}" for i in value]
-        # # ---------------------------
+    def change_format(x):
+        """
+        the purpose of this static method is to change the message to a Hexadecimal bytearray format acceptable
+         by pyserial and python (MODBUS)
+         """
 
         decimal = [int(DataConverting(x[i:i + 2]).hex_to_dec()) for i in range(0, len(x), 2)]
-        t = bytearray(decimal)
-        return t
+        return bytearray(decimal)
         # ----------------------------
 
     def __str__(self):
         return f"message = {self.message}\nCRC code = {self.crc}\nfull code = {self.full_code}"
 
+
+class ModbusBuilder:
+    """
+    this class responsible of constructing the message for Pump lab s1 with crc code and prepare it to be send
+    """
+    def __init__(self):
+        self.__slave_address = "01"
+        self._function_code_int = "06"
+        self._function_code_float = "10"
+        self._register_address = {"start_stop": "03E8", "Running_direction": "03E9", "speed": "03EA"}
+        self._The_number_of_register = "0002"  # float only
+        self.data = {"start": "0001", "stop": "0000", "cw": "0001", "ccw": "0000"}
+        self._the_number_of_bit = "04"
+        self.modbus = None
+
+    def build_start(self):
+        message = f"{self.__slave_address}{self._function_code_int}" \
+                  f"{self._register_address['start_stop']}{self.data['start']}"
+        self.modbus = CRCGenerator(message).generate.get_full_code()  # generating the crc code
+        return self
+
+    def build_stop(self):
+        message = f"{self.__slave_address}{self._function_code_int}" \
+                  f"{self._register_address['start_stop']}{self.data['stop']}"
+        self.modbus = CRCGenerator(message).generate.get_full_code()  # generating the crc code
+        return self
+
+    def build_flow_direction(self, direction: object = "cc") -> object:
+        message = f"{self.__slave_address}{self._function_code_int}" \
+                  f"{self._register_address['Running_direction']}{self.data[direction]}"
+        self.modbus = CRCGenerator(message).generate.get_full_code()  # generating the crc code
+        return self
+
+    def build_change_speed(self, new_speed=0):
+        data = ieee754_converter(new_speed)  # converting to IEEE754
+        message = f"{self.__slave_address}{self._function_code_float}" \
+                  f"{self._register_address['speed']}{self._The_number_of_register}" \
+                  f"{self._the_number_of_bit}{data}"
+        self.modbus = CRCGenerator(message).generate.get_full_code()  # generating the crc code
+        return self
+
+    @property
+    def get_modbus(self):
+        return self.modbus
+
+    def __str__(self):
+        return f" current message {str(self.modbus)}"
+
+
+if __name__ == "__main__":
+
+    print(PortManger().get_second_pump_port, type(PortManger().get_second_pump_port),
+          PortManger().get_number_of_pump_connected)
+    # p = ModbusBuilder()
+    # print(p.build_start().get_modbus)
