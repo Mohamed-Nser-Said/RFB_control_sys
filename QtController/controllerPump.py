@@ -16,7 +16,7 @@ class PumpConnectionManger:
     #     self.update_connection()
 
     def send_pump(self, data, send_to):
-        if self.update_connection() != False:
+        if self._update_connection() != False:
                 
             if send_to == Pump.MASTER:
                 self._write_s(self.maste_pump_port, data)
@@ -34,12 +34,14 @@ class PumpConnectionManger:
 
         self.serial.port = port
         self.serial.open()
+        # with self.serial as s:
+        #     s.write(data)
         self.serial.write(data)
         time.sleep(0.012)
         self.serial.close()
 
 
-    def update_connection(self):
+    def _update_connection(self):
         self.maste_pump_port = None
         self.second_pump_port = None
         if PortManger().get_number_of_pump_connected == 2:
@@ -102,10 +104,13 @@ if __name__ == "__main__":
     m = ModbusBuilder()
     p = PumpConnectionManger()
     start_ = m.build_start().get_modbus
-    stop_ = m.build_stop().get_modbus
-    speed_ = m.build_change_speed(10).get_modbus
-    p.send_pump(data=speed_, send_to=Pump.MASTER)
-    time.sleep(0.2)
+    # stop_ = m.build_stop().get_modbus
+    speed_ = m.build_change_speed(20).get_modbus
+
+    # time.sleep(0.2)
+
+    p.send_pump(data=speed_, send_to=Pump.BOTH)
+
     # p.send_pump(data=start_,send_to=Pump.MASTER)
     # time.sleep(0.2)
     # p.send_pump(data=stop_, send_to=Pump.MASTER)

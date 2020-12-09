@@ -86,6 +86,36 @@ class Pump(Enum):
     BOTH = 0
 
 
+class MasterSend:
+    def __init__(self):
+        self.start_stop = Pump.MASTER
+        self.direction = Pump.MASTER
+        self.speed = Pump.MASTER
+
+
+class Type:
+    def __init__(self):
+        self.start_stop = IS.UNI
+        self.direction = IS.UNI
+        self.speed = IS.UNI
+
+
+class MasterValues:
+    def __init__(self):
+        self.start_stop = None
+        self.direction = "cw"
+        self.speed = 0
+        self.speed_list = [0]
+
+
+class SecondValues:
+    def __init__(self):
+        self.start_stop = None
+        self.direction = "cw"
+        self.speed = 0
+        self.speed_list = [0]
+
+
 def xor(a, b):
     """
     this function replicate the XOR operation
@@ -260,7 +290,8 @@ class ModbusBuilder:
 
 if __name__ == "__main__":
 
-    print(PortManger().get_second_pump_port, type(PortManger().get_second_pump_port),
-          PortManger().get_number_of_pump_connected)
-    # p = ModbusBuilder()
-    # print(p.build_start().get_modbus)
+    my_port = PortManger()
+    print(my_port.get_master_pump_port)
+
+    p = ModbusBuilder()
+    print(p.build_start())

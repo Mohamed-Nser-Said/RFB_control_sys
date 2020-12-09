@@ -6,29 +6,123 @@ from PySide2.QtWidgets import QApplication, QDoubleSpinBox, QGridLayout, \
     QTabWidget, QComboBox, QLineEdit, QSpinBox
 
 from RedoxFlowProject.QtController.controllerPump import PumpConnectionManger, find_my_pump, step_increase
-from RedoxFlowProject.QtController.helper import ErrorMassage, PortManger, ModbusBuilder, CRCGenerator, Pump, IS
+from RedoxFlowProject.QtController.helper import ErrorMassage, PortManger, ModbusBuilder, CRCGenerator, Pump, IS, \
+    MasterSend, Type, MasterValues, SecondValues
 from RedoxFlowProject.QtView.NewWidget import BubbleWidget
+import pyqtgraph as pg
 import sys
 import time
 import serial
 
 
-class MasterSend:
+class AbstractQPushButton(QPushButton):
     def __init__(self):
-        self.start_stop = Pump.MASTER
-        self.direction = Pump.MASTER
-        self.speed = Pump.MASTER
+        super().__init__()
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy.Preferred,
+            QtWidgets.QSizePolicy.Preferred,
+        )
+        self.setIconSize(QSize(self.size() / 12))
+        self.clicked.connect(self.button_clicked)
+
+    def sizeHint(self):
+        return QtCore.QSize(70, 70)
+
+    def button_clicked(self):
+        pass
 
 
-class Type:
-    def __init__(self):
-        self.start_stop = IS.UNI
-        self.direction = IS.UNI
-        self.speed = IS.UNI
+class AbstractBackGround(QWidget):
+    def __init__(self, color='#ced9cf'):
+        super().__init__()
+        self.color = QtGui.QColor(color)
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy.Preferred,
+            QtWidgets.QSizePolicy.Preferred)
+
+    def sizeHint(self):
+        return QtCore.QSize(400, 250)
+
+    def paintEvent(self, e):
+        painter = QtGui.QPainter(self)
+        width, height = painter.device().width(), painter.device().height()
+        rect = QtCore.QRect(0, 0, width, height)
+
+        # QBrush to fill color
+        brush = QtGui.QBrush()
+        brush.setColor(self.color)
+        brush.setStyle(Qt.SolidPattern)
+
+        # QPainterPath to draw rectangle oth round shape
+        path = QtGui.QPainterPath()
+        path.addRoundedRect(rect, 5, 5)
+        painter.fillPath(path, brush)
+
+        painter.end()
 
 
 master_send = MasterSend()
 typ = Type()
+master_state = MasterValues()
+second_state = SecondValues()
+
+
+class SpeedMonitor(AbstractBackGround):
+    def __init__(self, color='#000000'):
+        super().__init__()
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.MinimumExpanding)
+        self.color = QtGui.QColor(color)
+        self.close = CloseQPushButton()
+        self.graphWidget = pg.PlotWidget()
+        self.graphWidget.setBackground("000000")
+        self.graphWidget.showGrid(x=True, y=True)
+        pen1 = pg.mkPen(color="#ff0000", width=3)
+        pen2 = pg.mkPen(color="#307cff", width=3)
+
+        self.time = [0]
+        self.speed_master = [0]
+        self.speed_second = [0]
+
+        self.data_line1 = self.graphWidget.plot(self.time, self.speed_master, pen=pen2)
+
+        self.timer = QtCore.QTimer()
+        self.timer = QtCore.QTimer()
+        self.timer.setInterval(60)
+        self.timer.timeout.connect(self.update_plot_data)
+        self.timer.start()
+
+        if PortManger().get_number_of_pump_connected > 1:
+            self.data_line = self.graphWidget.plot(self.time, self.speed_second, pen=pen1)
+        self.timer2 = QtCore.QTimer()
+        self.timer2 = QtCore.QTimer()
+        self.timer2.setInterval(65)
+        self.timer2.timeout.connect(self.update_plot_data2)
+        self.timer2.start()
+        layout = QGridLayout()
+        layout.addWidget(self.close, 0, 2)
+        layout.addWidget(self.graphWidget, 0, 0, 2, 2)
+        self.setLayout(layout)
+
+    def update_plot_data(self):
+        self.time.append(self.time[-1] + 1)
+        self.speed_master.append(master_state.speed_list[-1])
+        self.speed_second.append(second_state.speed_list[-1])
+
+        self.data_line.setData(self.time, self.speed_master)
+        self.data_line1.setData(self.time, self.speed_second)
+
+    def update_plot_data2(self):
+        self.time = self.time[1:]
+        self.speed_master = self.speed_master[1:]
+        self.speed_second = self.speed_second[1:]
+
+        self.data_line.setData(self.time, self.speed_master)
+        self.data_line1.setData(self.time, self.speed_second)
+
+    def sizeHint(self):
+        return QtCore.QSize(500, 300)
 
 
 class MasterPumpTab(QTabWidget):
@@ -170,10 +264,9 @@ class SecondPumpTab(QTabWidget):
             typ.start_stop = IS.UNI
             typ.direction = IS.UNI
 
-        PumpMainWindow.PumpWidget.update_my_window()
+        window.update_my_window()
 
 
-# Done
 class ModbusSenderTab(QTabWidget):
     def __init__(self):
         super().__init__()
@@ -279,7 +372,6 @@ class ModbusSenderTab(QTabWidget):
         return s
 
 
-# Done
 class SettingWindow(QMainWindow):
     """
     Setting window GUI
@@ -325,7 +417,6 @@ class SettingWindow(QMainWindow):
         self.close()
 
 
-# Done
 class StepIncreaseWindow(QMainWindow):
     """
     Steps increase window GUI
@@ -425,145 +516,127 @@ class StepIncreaseWindow(QMainWindow):
         self.threadpool.start((StepsIncrease()))
 
 
-class SettingsQPushButton(QPushButton):
+class SettingsQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
         self.x = SettingWindow()
-        self.setSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Preferred,
-        )
         self.setIcon(QIcon(r"../QtIcons/settings.png"))
-        self.setIconSize(QSize(self.size() / 10))
-        self.clicked.connect(self.button_clicked)
-
-    def sizeHint(self):
-        return QtCore.QSize(70, 70)
 
     def button_clicked(self):
         self.x.show()
 
 
-class PowerQPushButton(QPushButton):
+class PowerQPushButton(AbstractQPushButton):
     def __init__(self, send_to):
         super().__init__()
-        self.setSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Preferred,
-        )
-
-        self.setIconSize(QSize(self.size() / 10))
         self.power_button_state = False
         self.setIcon(QIcon(r"../QtIcons/on.png"))
         self.setCheckable(True)
-        self.clicked.connect(self.power_button_clicked)
         self.setChecked(self.power_button_state)
 
         self.send_to = send_to
         self.pumpConnectionManger = PumpConnectionManger()
         self.modbusBuilder = ModbusBuilder()
 
-    def sizeHint(self):
-        return QtCore.QSize(70, 70)
-
-    def power_button_clicked(self, checked):
+    def button_clicked(self, checked):
         if checked:
             self.setIcon(QIcon(r"../QtIcons/off.png"))
             self.pumpConnectionManger.send_pump(data=self.modbusBuilder.build_start().get_modbus, send_to=self.send_to)
+            if isinstance(self.parent(), PumpMasterWidget):
+                master_state.speed_list.append(self.parent().SpeedQDoubleSpinBox.value())
+                master_state.start_stop = True
+                if typ.start_stop == IS.DUAL_CLONE:
+                    second_state.speed_list.append(self.parent().SpeedQDoubleSpinBox.value())
+                    second_state.start_stop = True
 
+            elif isinstance(self.parent(), PumpSecondWidget) or typ.start_stop == IS.DUAL_CLONE:
+                second_state.speed_list.append(self.parent().SpeedQDoubleSpinBox.value())
+                second_state.start_stop = True
         if not checked:
             self.setIcon(QIcon(r"../QtIcons/on.png"))
             self.pumpConnectionManger.send_pump(data=self.modbusBuilder.build_stop().get_modbus, send_to=self.send_to)
+            if isinstance(self.parent(), PumpMasterWidget):
+                master_state.speed_list.append(0)
+                master_state.start_stop = False
+                if typ.start_stop == IS.DUAL_CLONE:
+                    second_state.speed_list.append(0)
+                    second_state.start_stop = False
+
+            elif isinstance(self.parent(), PumpSecondWidget):
+                second_state.speed_list.append(0)
+                second_state.start_stop = False
 
 
-class DirectionQPushButton(QPushButton):
+class DirectionQPushButton(AbstractQPushButton):
     def __init__(self, send_to):
         super().__init__()
-        self.setSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Preferred,
-        )
-        self.setIconSize(QSize(self.size() / 12))
         self.direction_button_state = False
         self.setIcon(QIcon(r"../QtIcons/forward.png"))
         self.setCheckable(True)
-        self.clicked.connect(self.direction_button_clicked)
         self.setChecked(self.direction_button_state)
 
         self.pumpConnectionManger = PumpConnectionManger()
         self.modbusBuilder = ModbusBuilder()
         self.send_to = send_to
 
-    def sizeHint(self):
-        return QtCore.QSize(70, 70)
-
-    def direction_button_clicked(self, checked):
+    def button_clicked(self, checked):
         if checked:
             self.setIcon(QIcon(r"../QtIcons/backward.png"))
             self.pumpConnectionManger.send_pump(
                 data=self.modbusBuilder.build_flow_direction("ccw").get_modbus, send_to=self.send_to)
+            master_state.direction = "ccw"
 
         if not checked:
             self.setIcon(QIcon(r"../QtIcons/forward.png"))
             self.pumpConnectionManger.send_pump(
                 data=self.modbusBuilder.build_flow_direction("cw").get_modbus, send_to=self.send_to)
+            master_state.direction = "cw"
 
 
-class AddPumpQPushButton(QPushButton):
+class AddSecondPumpQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
-        self.setSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Preferred,
-        )
-        self.setIconSize(QSize(self.size() / 12))
-        self.setIcon(QIcon(r"../QtIcons/plus.png"))
-        self.clicked.connect(self.add_pump_clicked)
+        self.setIcon(QIcon(r"../QtIcons/two.png"))
 
-    def sizeHint(self):
-        return QtCore.QSize(70, 70)
-
-    def add_pump_clicked(self):
+    def button_clicked(self):
         self.parent().settingsQPushButton.x.SecondPumpTab.second_pump_QComboBox.setCurrentText("Enabled")
         self.parent().settingsQPushButton.x.SecondPumpTab.apply_setting()
 
 
-class MergeQPushButton(QPushButton):
+class AddMasterPumpQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
-        self.setSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Preferred,
-        )
-        self.setIconSize(QSize(self.size() / 12))
+        self.setIcon(QIcon(r"../QtIcons/one.png"))
+
+    def button_clicked(self):
+        self.parent().show_master_pump()
+
+
+class AddMonitorQPushButton(AbstractQPushButton):
+    def __init__(self):
+        super().__init__()
+        self.setIcon(QIcon(r"../QtIcons/line-graph.png"))
+
+    def button_clicked(self):
+        self.parent().show_monitor()
+
+
+class MergeQPushButton(AbstractQPushButton):
+    def __init__(self):
+        super().__init__()
         self.setIcon(QIcon(r"../QtIcons/merging.png"))
-        self.clicked.connect(self.btn_clicked)
 
-    def sizeHint(self):
-        return QtCore.QSize(70, 70)
-
-    @staticmethod
-    def btn_clicked(checked):
-        if checked:
-            pass
+    def button_clicked(self):
+        self.parent().SpeedQDoubleSpinBox.setValue(master_state.speed)
 
 
-class StepIncreaseQPushButton(QPushButton):
+class StepIncreaseQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
-        self.setSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Preferred,
-        )
-        self.setIconSize(QSize(self.size() / 12))
         self.setIcon(QIcon(r"../QtIcons/stepincrease.png"))
-        self.clicked.connect(self.step_clicked)
         self.StepIncreaseWindow = StepIncreaseWindow()
 
-    def sizeHint(self):
-        return QtCore.QSize(70, 70)
-
-    def step_clicked(self):
+    def button_clicked(self):
         self.StepIncreaseWindow.show()
 
 
@@ -631,12 +704,12 @@ class SpeedQSlider(QSlider):
         super().__init__(Qt.Horizontal)
         self.setMaximum(300)
         self.setMinimum(0)
-        self.setSingleStep(2)
+        self.setSingleStep(10)
         self.valueChanged.connect(self.value_changed)
 
         self.setSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Preferred,
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.MinimumExpanding,
         )
 
     def sizeHint(self):
@@ -652,9 +725,7 @@ class SpeedQDoubleSpinBox(QDoubleSpinBox):
         self.setMinimum(0)
         self.setMaximum(300)
         self.setPrefix("speed in rpm : ")
-        self.setSingleStep(0.100)
-        self.setValue(10)
-        self.size
+        self.setSingleStep(1)
         self.valueChanged.connect(self.value_changed)
 
         self.setSizePolicy(
@@ -676,9 +747,17 @@ class SpeedQDoubleSpinBox(QDoubleSpinBox):
         self.parent().SpeedQSlider.setValue(i)
         self.parent().PumpBubbleWidget.value = i
         self.parent().PumpBubbleWidget.color_value = int(i * 10 // 300)
+        master_state.speed = i
+        if isinstance(self.parent(), PumpMasterWidget) and master_state.start_stop is True:
+            master_state.speed_list.append(i)
+            if typ.speed == IS.DUAL_CLONE:
+                second_state.speed_list.append(i)
+
+        elif isinstance(self.parent(), PumpSecondWidget) and second_state.start_stop is True:
+            second_state.speed_list.append(i)
 
 
-class AbstractPumpWidget(QWidget):
+class AbstractPumpWidget(AbstractBackGround):
     def __init__(self, color='#ced9cf'):
         super().__init__()
         self.PumpBubbleWidget = BubbleWidget(text='Pump Speed', text_unit="rpm")
@@ -690,87 +769,6 @@ class AbstractPumpWidget(QWidget):
     def sizeHint(self):
         return QtCore.QSize(400, 250)
 
-    def paintEvent(self, e):
-        painter = QtGui.QPainter(self)
-        width, height = painter.device().width(), painter.device().height()
-        rect = QtCore.QRect(0, 0, width, height)
-
-        # QBrush to fill color
-        brush = QtGui.QBrush()
-        brush.setColor(self.color)
-        brush.setStyle(Qt.SolidPattern)
-
-        # QPainterPath to draw rectangle oth round shape
-        path = QtGui.QPainterPath()
-        path.addRoundedRect(rect, 5, 5)
-        painter.fillPath(path, brush)
-
-        painter.end()
-
-
-# class PumpWidget(AbstractPumpWidget):
-#
-#     # def __init__(self, color='#ced9cf'):
-#     def __init__(self):
-#         super().__init__()
-#         # self.PumpBubbleWidget = BubbleWidget(text='Pump Speed', text_unit="rpm")
-#         # self.color = QtGui.QColor(color)
-#         # self.setSizePolicy(
-#         #     QtWidgets.QSizePolicy.MinimumExpanding,
-#         #     QtWidgets.QSizePolicy.MinimumExpanding)
-#         self.pump_second_widget = PumpSecondWidget()
-#
-#         self.MergeQPushButton = MergeQPushButton()
-#         self.StepIncreaseQPushButton = StepIncreaseQPushButton()
-#         self.AddPumpQPushButton = AddPumpQPushButton()
-#         self.MiniQPushButton = CloseQPushButton()
-#         self.ExternalQPushButton = ExternalQPushButton()
-#         self.InfoQPushButton = InfoQPushButton()
-#
-#         self.g_layout = QGridLayout()
-#         self.h_layout = QHBoxLayout()
-#         self.h_layout1 = QHBoxLayout()
-#         self.v_layout = QVBoxLayout()
-#         self.v_layout1 = QVBoxLayout()
-#
-#         self.settingsQPushButton = SettingsQPushButton()
-#         self.power_button = PowerQPushButton(send_to=master_send.start_stop)
-#         self.direction_button = DirectionQPushButton(send_to=master_send.direction)
-#         self.SpeedQDoubleSpinBox = SpeedQDoubleSpinBox(send_to=master_send.speed)
-#         self.SpeedQSlider = SpeedQSlider()
-#
-#         self.SpeedQDoubleSpinBox.valueChanged.connect(self.PumpBubbleWidget._trigger_refresh)
-#         self.SpeedQSlider.valueChanged.connect(self.PumpBubbleWidget._trigger_refresh)
-#
-#         self.h_layout.addWidget(self.MiniQPushButton)
-#         self.h_layout.addWidget(self.ExternalQPushButton)
-#         self.h_layout.addWidget(self.InfoQPushButton)
-#
-#         self.h_layout1.addWidget(self.power_button)
-#         self.h_layout1.addWidget(self.direction_button)
-#         self.h_layout1.addWidget(self.settingsQPushButton)
-#         self.h_layout1.addWidget(self.AddPumpQPushButton)
-#         self.h_layout1.addWidget(self.StepIncreaseQPushButton)
-#
-#         self.h_layout.addWidget(self.MiniQPushButton)
-#         self.h_layout.addWidget(self.ExternalQPushButton)
-#         self.h_layout.addWidget(self.InfoQPushButton)
-#
-#         self.g_layout.addLayout(self.h_layout1, 0, 0, 1, 2)
-#         self.g_layout.addWidget(self.SpeedQDoubleSpinBox, 1, 0)
-#         self.g_layout.addWidget(self.SpeedQSlider, 2, 0)
-#
-#         self.g_layout.addLayout(self.h_layout, 4, 1)
-#
-#         self.setLayout(self.g_layout)
-#
-#     def update_my_window(self):
-#         self.power_button.send_to = master_send.start_stop
-#         self.direction_button.send_to = master_send.direction
-#         self.SpeedQDoubleSpinBox.send_to = master_send.speed
-#         self.g_layout.addWidget(self.pump_second_widget, 3, 0)
-#         self.pump_second_widget.update_my_window()
-#         self.pump_second_widget.show()
 
 class PumpWidget(AbstractPumpWidget):
     def __init__(self):
@@ -780,15 +778,18 @@ class PumpWidget(AbstractPumpWidget):
             QtWidgets.QSizePolicy.Maximum)
         self.pump_master_widget = PumpMasterWidget()
         self.pump_second_widget = PumpSecondWidget()
+        self.SpeedMonitor = SpeedMonitor()
 
-        self.AddPumpQPushButton = AddPumpQPushButton()
+        self.AddMasterPumpQPushButton = AddMasterPumpQPushButton()
+        self.AddMonitorQPushButton = AddMonitorQPushButton()
+        self.AddPumpQPushButton = AddSecondPumpQPushButton()
         self.MiniQPushButton = CloseQPushButton()
         self.ExternalQPushButton = ExternalQPushButton()
         self.InfoQPushButton = InfoQPushButton()
 
         self.g_layout = QGridLayout()
         self.h_layout = QHBoxLayout()
-        self.h_layout1 = QHBoxLayout()
+        self.v_layout1 = QHBoxLayout()
 
         self.settingsQPushButton = SettingsQPushButton()
 
@@ -796,13 +797,15 @@ class PumpWidget(AbstractPumpWidget):
         self.h_layout.addWidget(self.ExternalQPushButton)
         self.h_layout.addWidget(self.InfoQPushButton)
 
-        self.h_layout1.addWidget(self.settingsQPushButton)
-        self.h_layout1.addWidget(self.AddPumpQPushButton)
+        self.v_layout1.addWidget(self.settingsQPushButton)
+        self.v_layout1.addWidget(self.AddMasterPumpQPushButton)
+        self.v_layout1.addWidget(self.AddPumpQPushButton)
+        self.v_layout1.addWidget(self.AddMonitorQPushButton)
 
-        self.g_layout.addLayout(self.h_layout1, 0, 0)
+        self.g_layout.addLayout(self.v_layout1, 0, 0, 1, 2)
         self.g_layout.addWidget(self.pump_master_widget, 1, 0)
 
-        self.g_layout.addLayout(self.h_layout, 2, 2)
+        self.g_layout.addLayout(self.h_layout, 4, 2)
 
         self.setLayout(self.g_layout)
 
@@ -815,6 +818,13 @@ class PumpWidget(AbstractPumpWidget):
         if typ.speed != IS.UNI:
             self.pump_second_widget.show()
 
+    def show_monitor(self):
+        self.g_layout.addWidget(self.SpeedMonitor, 2, 0, 2, 2)
+        self.SpeedMonitor.show()
+
+    def show_master_pump(self):
+        self.pump_master_widget.show()
+
     def sizeHint(self):
         return QtCore.QSize(400, 400)
 
@@ -824,8 +834,8 @@ class PumpMasterWidget(AbstractPumpWidget):
     def __init__(self, color='#6d18db'):
         super().__init__()
         self.setSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Maximum)
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.MinimumExpanding)
         self.color = QtGui.QColor(color)
 
         self.close = CloseQPushButton()
@@ -854,16 +864,16 @@ class PumpMasterWidget(AbstractPumpWidget):
         self.SpeedQDoubleSpinBox.send_to = master_send.speed
 
     def sizeHint(self):
-        return QtCore.QSize(200, 100)
+        return QtCore.QSize(100, 80)
 
 
 class PumpSecondWidget(AbstractPumpWidget):
 
-    def __init__(self, color='#6d18db'):
+    def __init__(self, color='#600075'):
         super().__init__()
         self.setSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Maximum)
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.MinimumExpanding)
         self.color = QtGui.QColor(color)
 
         self.close = CloseQPushButton()
@@ -906,7 +916,7 @@ class PumpSecondWidget(AbstractPumpWidget):
             self.direction_button_second.setDisabled(True)
 
     def sizeHint(self):
-        return QtCore.QSize(200, 100)
+        return QtCore.QSize(100, 80)
 
 
 class PumpMainWindow(QMainWindow):
@@ -926,10 +936,10 @@ class PumpMainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
-    PumpMainWindow = PumpMainWindow()
+    window = PumpWidget()
     # pal = QPalette()
     # pal.setColor(QPalette.Background, '#545454')
     # PumpMainWindow.setAutoFillBackground(True)
     # PumpMainWindow.setPalette(pal)
-    PumpMainWindow.show()
+    window.show()
     app.exec_()

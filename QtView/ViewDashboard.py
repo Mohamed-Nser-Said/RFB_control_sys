@@ -53,13 +53,13 @@ class MainWindow(QMainWindow):
         v_layout.addWidget(self.liquid_level)
 
         # self.graphx1 = ToolBar()
-        self.PumpMainWindow = PumpWidget()
+        self.PumpWidget = PumpWidget()
         self.graphx3 = AddWidget()
         self.graphx4 = AddWidget()
         self.graphx5 = AddWidget()
         self.Notification = Notification()
 
-        v_layout.addWidget(self.PumpMainWindow.PumpBubbleWidget)
+        v_layout.addWidget(self.PumpWidget.PumpBubbleWidget)
 
         # print(self.StateWidget.pump_speed.value)
 
@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
 
         # self.grid_layout.addWidget(self.graphx1, 0, 0, 1, 4)
 
-        self.grid_layout.addWidget(self.PumpMainWindow, 1, 0)
+        self.grid_layout.addWidget(self.PumpWidget, 1, 0)
         self.grid_layout.addWidget(self.graphx3, 2, 0)
         self.grid_layout.addWidget(self.graphx4, 1, 1)
         self.grid_layout.addWidget(self.graphx5, 2, 1)
