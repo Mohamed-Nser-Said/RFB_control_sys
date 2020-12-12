@@ -104,14 +104,14 @@ if __name__ == "__main__":
     m = ModbusBuilder()
     p = PumpConnectionManger()
     start_ = m.build_start().get_modbus
-    # stop_ = m.build_stop().get_modbus
-    speed_ = m.build_change_speed(20).get_modbus
+    stop_ = m.build_stop().get_modbus
+    speed_ = m.build_change_speed(30).get_modbus
 
     # time.sleep(0.2)
 
-    p.send_pump(data=speed_, send_to=Pump.BOTH)
+    p.send_pump(data=stop_, send_to=Pump.MASTER)
 
-    # p.send_pump(data=start_,send_to=Pump.MASTER)
+    # p.send_pump(data=s,send_to=Pump.MASTER)
     # time.sleep(0.2)
     # p.send_pump(data=stop_, send_to=Pump.MASTER)
     # step_increase(5, 24, 5, 1, Pump.BOTH)

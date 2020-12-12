@@ -290,8 +290,8 @@ class ModbusBuilder:
 
 if __name__ == "__main__":
 
-    my_port = PortManger()
-    print(my_port.get_master_pump_port)
+    # my_port = PortManger()
+    # print(my_port.get_master_pump_port)
 
     p = ModbusBuilder()
     print(p.build_start())

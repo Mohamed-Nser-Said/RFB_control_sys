@@ -81,9 +81,9 @@ class SpeedMonitor(AbstractBackGround):
         pen1 = pg.mkPen(color="#ff0000", width=3)
         pen2 = pg.mkPen(color="#307cff", width=3)
 
-        self.time = [0]
-        self.speed_master = [0]
-        self.speed_second = [0]
+        self.time = [0, 0]
+        self.speed_master = [0, 0]
+        self.speed_second = [0, 0]
 
         self.data_line1 = self.graphWidget.plot(self.time, self.speed_master, pen=pen2)
 
@@ -381,12 +381,12 @@ class SettingWindow(QMainWindow):
         self.setWindowTitle("Advance Setting")
         self.setWindowIcon(QIcon(r"../QtIcons/settings.png"))
         self.setFixedSize(380, 500)
+        self.SecondPumpTab = SecondPumpTab()
 
         # Ok button Setting
         self.ok_btn = QPushButton("OK")
         self.ok_btn.setFixedSize(80, 30)
         self.ok_btn.clicked.connect(self.ok_btn_clicked)
-        self.SecondPumpTab = SecondPumpTab()
 
         # Tab setting
         tabs = QTabWidget()
@@ -519,11 +519,10 @@ class StepIncreaseWindow(QMainWindow):
 class SettingsQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
-        self.x = SettingWindow()
         self.setIcon(QIcon(r"../QtIcons/settings.png"))
 
     def button_clicked(self):
-        self.x.show()
+        self.parent().SettingWindow.show()
 
 
 class PowerQPushButton(AbstractQPushButton):
@@ -599,8 +598,8 @@ class AddSecondPumpQPushButton(AbstractQPushButton):
         self.setIcon(QIcon(r"../QtIcons/two.png"))
 
     def button_clicked(self):
-        self.parent().settingsQPushButton.x.SecondPumpTab.second_pump_QComboBox.setCurrentText("Enabled")
-        self.parent().settingsQPushButton.x.SecondPumpTab.apply_setting()
+        self.parent().SettingWindow.SecondPumpTab.second_pump_QComboBox.setCurrentText("Enabled")
+        self.parent().SettingWindow.SecondPumpTab.apply_setting()
 
 
 class AddMasterPumpQPushButton(AbstractQPushButton):
@@ -779,6 +778,8 @@ class PumpWidget(AbstractPumpWidget):
         self.pump_master_widget = PumpMasterWidget()
         self.pump_second_widget = PumpSecondWidget()
         self.SpeedMonitor = SpeedMonitor()
+
+        self.SettingWindow = SettingWindow()
 
         self.AddMasterPumpQPushButton = AddMasterPumpQPushButton()
         self.AddMonitorQPushButton = AddMonitorQPushButton()
