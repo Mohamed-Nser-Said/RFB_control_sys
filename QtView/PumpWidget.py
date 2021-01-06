@@ -1,9 +1,9 @@
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtCore import QSize, Qt, QThreadPool, QRunnable, Slot
-from PySide2.QtGui import QIcon, QPixmap, QPalette
+from PySide2.QtGui import QIcon, QPixmap, QPalette, QKeySequence
 from PySide2.QtWidgets import QApplication, QDoubleSpinBox, QGridLayout, \
     QMainWindow, QWidget, QPushButton, QHBoxLayout, QSlider, QLabel, QVBoxLayout, \
-    QTabWidget, QComboBox, QLineEdit, QSpinBox
+    QTabWidget, QComboBox, QLineEdit, QSpinBox, QDockWidget, QMenu, QAction
 
 from RedoxFlowProject.QtController.controllerPump import PumpConnectionManger, find_my_pump, step_increase
 from RedoxFlowProject.QtController.helper import ErrorMassage, PortManger, ModbusBuilder, CRCGenerator, Pump, IS, \
@@ -13,6 +13,8 @@ import pyqtgraph as pg
 import sys
 import time
 import serial
+import qtmodern.styles
+import qtmodern.windows
 
 
 class AbstractQPushButton(QPushButton):
@@ -106,20 +108,22 @@ class SpeedMonitor(AbstractBackGround):
         self.setLayout(layout)
 
     def update_plot_data(self):
-        self.time.append(self.time[-1] + 1)
-        self.speed_master.append(master_state.speed_list[-1])
-        self.speed_second.append(second_state.speed_list[-1])
+        if PortManger().get_number_of_pump_connected > 0:
+            self.time.append(self.time[-1] + 1)
+            self.speed_master.append(master_state.speed_list[-1])
+            self.speed_second.append(second_state.speed_list[-1])
 
-        self.data_line.setData(self.time, self.speed_master)
-        self.data_line1.setData(self.time, self.speed_second)
+            self.data_line.setData(self.time, self.speed_master)
+            self.data_line1.setData(self.time, self.speed_second)
 
     def update_plot_data2(self):
-        self.time = self.time[1:]
-        self.speed_master = self.speed_master[1:]
-        self.speed_second = self.speed_second[1:]
+        if PortManger().get_number_of_pump_connected > 0:
+            self.time = self.time[1:]
+            self.speed_master = self.speed_master[1:]
+            self.speed_second = self.speed_second[1:]
 
-        self.data_line.setData(self.time, self.speed_master)
-        self.data_line1.setData(self.time, self.speed_second)
+            self.data_line.setData(self.time, self.speed_master)
+            self.data_line1.setData(self.time, self.speed_second)
 
     def sizeHint(self):
         return QtCore.QSize(500, 300)
@@ -502,7 +506,7 @@ class StepIncreaseWindow(QMainWindow):
         elif PortManger().get_number_of_pump_connected == 1:
             send_to = Pump.MASTER
         elif PortManger().get_number_of_pump_connected == 0:
-            ErrorMassage("Erro", "No Pump is Connected")
+            ErrorMassage("Error", "No pump is Connected, please check your connection and try again ")
         duration = int(self.duration_QSpinBox.value())
         steps = int(self.step_QSpinBox.value())
         stop = int(self.stop_QSpinBox.text())
@@ -511,7 +515,8 @@ class StepIncreaseWindow(QMainWindow):
         class StepsIncrease(QRunnable):
             @Slot()
             def run(self):
-                step_increase(start, stop, steps, duration, send_to)
+                if PortManger().get_number_of_pump_connected > 0:
+                    step_increase(start, stop, steps, duration, send_to)
 
         self.threadpool.start((StepsIncrease()))
 
@@ -520,6 +525,7 @@ class SettingsQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
         self.setIcon(QIcon(r"../QtIcons/settings.png"))
+        self.setShortcut(QKeySequence("Ctrl+s"))
 
     def button_clicked(self):
         self.parent().SettingWindow.show()
@@ -532,7 +538,7 @@ class PowerQPushButton(AbstractQPushButton):
         self.setIcon(QIcon(r"../QtIcons/on.png"))
         self.setCheckable(True)
         self.setChecked(self.power_button_state)
-
+        self.setShortcut(QKeySequence("Space"))
         self.send_to = send_to
         self.pumpConnectionManger = PumpConnectionManger()
         self.modbusBuilder = ModbusBuilder()
@@ -572,6 +578,7 @@ class DirectionQPushButton(AbstractQPushButton):
         self.direction_button_state = False
         self.setIcon(QIcon(r"../QtIcons/forward.png"))
         self.setCheckable(True)
+        self.setShortcut(QKeySequence("Ctrl+d"))
         self.setChecked(self.direction_button_state)
 
         self.pumpConnectionManger = PumpConnectionManger()
@@ -596,6 +603,7 @@ class AddSecondPumpQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
         self.setIcon(QIcon(r"../QtIcons/two.png"))
+        self.setShortcut(QKeySequence("Ctrl+2"))
 
     def button_clicked(self):
         self.parent().SettingWindow.SecondPumpTab.second_pump_QComboBox.setCurrentText("Enabled")
@@ -606,6 +614,7 @@ class AddMasterPumpQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
         self.setIcon(QIcon(r"../QtIcons/one.png"))
+        self.setShortcut(QKeySequence("Ctrl+1"))
 
     def button_clicked(self):
         self.parent().show_master_pump()
@@ -615,6 +624,7 @@ class AddMonitorQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
         self.setIcon(QIcon(r"../QtIcons/line-graph.png"))
+        self.setShortcut(QKeySequence("Ctrl+m"))
 
     def button_clicked(self):
         self.parent().show_monitor()
@@ -634,6 +644,7 @@ class StepIncreaseQPushButton(AbstractQPushButton):
         super().__init__()
         self.setIcon(QIcon(r"../QtIcons/stepincrease.png"))
         self.StepIncreaseWindow = StepIncreaseWindow()
+        self.setShortcut(QKeySequence("Ctrl+t"))
 
     def button_clicked(self):
         self.StepIncreaseWindow.show()
@@ -775,6 +786,7 @@ class PumpWidget(AbstractPumpWidget):
         self.setSizePolicy(
             QtWidgets.QSizePolicy.Maximum,
             QtWidgets.QSizePolicy.Maximum)
+
         self.pump_master_widget = PumpMasterWidget()
         self.pump_second_widget = PumpSecondWidget()
         self.SpeedMonitor = SpeedMonitor()
@@ -828,6 +840,13 @@ class PumpWidget(AbstractPumpWidget):
 
     def sizeHint(self):
         return QtCore.QSize(400, 400)
+
+    def contextMenuEvent(self, e):
+        context = QMenu(self)
+        context.addAction(QAction("test 1", self))
+        context.addAction(QAction("test 2", self))
+        context.addAction(QAction("test 3", self))
+        context.exec_(e.globalPos())
 
 
 class PumpMasterWidget(AbstractPumpWidget):
@@ -938,9 +957,14 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
     window = PumpWidget()
+    window.show()
     # pal = QPalette()
     # pal.setColor(QPalette.Background, '#545454')
     # PumpMainWindow.setAutoFillBackground(True)
     # PumpMainWindow.setPalette(pal)
-    window.show()
+
+    # qtmodern.styles.dark(app)
+    # mw = qtmodern.windows.ModernWindow(window)
+    # mw.show()
+
     app.exec_()
