@@ -1,20 +1,18 @@
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtCore import QSize, Qt, QThreadPool, QRunnable, Slot
-from PySide2.QtGui import QIcon, QPixmap, QPalette, QKeySequence
-from PySide2.QtWidgets import QApplication, QDoubleSpinBox, QGridLayout, \
-    QMainWindow, QWidget, QPushButton, QHBoxLayout, QSlider, QLabel, QVBoxLayout, \
-    QTabWidget, QComboBox, QLineEdit, QSpinBox, QDockWidget, QMenu, QAction
+from PySide2.QtGui import QIcon, QKeySequence
+from PySide2.QtWidgets import QApplication, QDoubleSpinBox, QGridLayout
+from PySide2.QtWidgets import QMainWindow, QWidget, QPushButton, QHBoxLayout, QSlider, QLabel, QVBoxLayout
+from PySide2.QtWidgets import QTabWidget, QComboBox, QLineEdit, QSpinBox, QMenu, QAction
 
-from RedoxFlowProject.QtController.controllerPump import PumpConnectionManger, find_my_pump, step_increase
-from RedoxFlowProject.QtController.helper import ErrorMassage, PortManger, ModbusBuilder, CRCGenerator, Pump, IS, \
-    MasterSend, Type, MasterValues, SecondValues
-from RedoxFlowProject.QtView.NewWidget import BubbleWidget
+from RedoxFlowProject.main_simple_ui.controllerPump import PumpConnectionManger, find_my_pump, step_increase
+from RedoxFlowProject.main_simple_ui.helper import ErrorMassage, PortManger, ModbusBuilder, CRCGenerator, Pump, IS
+from RedoxFlowProject.main_simple_ui.helper import MasterSend, Type, MasterValues, SecondValues
+from RedoxFlowProject.main_simple_ui.NewWidget import BubbleWidget
 import pyqtgraph as pg
 import sys
 import time
 import serial
-import qtmodern.styles
-import qtmodern.windows
 
 
 class AbstractQPushButton(QPushButton):
@@ -751,8 +749,8 @@ class SpeedQDoubleSpinBox(QDoubleSpinBox):
         return QtCore.QSize(100, 30)
 
     def value_changed(self, i):
-        self.pumpConnectionManger.send_pump(data=self.modbusBuilder.build_change_speed(i).get_modbus
-                                            , send_to=self.send_to)
+        self.pumpConnectionManger.send_pump(data=self.modbusBuilder.build_change_speed(i).get_modbus,
+                                            send_to=self.send_to)
 
         self.parent().SpeedQSlider.setValue(i)
         self.parent().PumpBubbleWidget.value = i
@@ -956,15 +954,12 @@ class PumpMainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
-    window = PumpWidget()
-    window.show()
-    # pal = QPalette()
-    # pal.setColor(QPalette.Background, '#545454')
-    # PumpMainWindow.setAutoFillBackground(True)
-    # PumpMainWindow.setPalette(pal)
+    window = PumpMainWindow()
 
     # qtmodern.styles.dark(app)
     # mw = qtmodern.windows.ModernWindow(window)
     # mw.show()
-
+    window.show()
     app.exec_()
+
+

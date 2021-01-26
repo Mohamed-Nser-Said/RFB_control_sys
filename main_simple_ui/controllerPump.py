@@ -1,10 +1,7 @@
-from RedoxFlowProject.QtController.helper import ErrorMassage, PortManger,\
+from RedoxFlowProject.main_simple_ui.helper import ErrorMassage, PortManger,\
  ModbusBuilder, Pump
 import serial
 import time
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import QSize, Qt, QRunnable, Slot
-
 
 
 class PumpConnectionManger:

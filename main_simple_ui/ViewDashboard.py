@@ -4,9 +4,9 @@ from PySide2.QtGui import QIcon, QPalette, QPixmap
 from PySide2 import QtGui, QtWidgets, QtCore
 from PySide2.QtWidgets import QApplication, QHBoxLayout, QMainWindow, QWidget, QGridLayout, QPushButton, QComboBox, \
     QVBoxLayout, QLCDNumber, QLabel, QDoubleSpinBox, QSlider
-from RedoxFlowProject.QtView.NewWidget import BubbleWidget, Add, NotificationWidget
+from RedoxFlowProject.main_ui.NewWidget import BubbleWidget, Add, NotificationWidget
 
-from RedoxFlowProject.QtView.PumpWidget import PumpWidget
+from RedoxFlowProject.main_ui.PumpWidget import PumpWidget
 from enum import Enum
 
 

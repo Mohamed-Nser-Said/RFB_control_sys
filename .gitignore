@@ -1,3 +1,7 @@
 .idea
-QtTrash
+trash
+HDFViewer
+venv
+main_new_ui/parkinglot.py
+main_new_ui/procedure.py
 __pycache__
