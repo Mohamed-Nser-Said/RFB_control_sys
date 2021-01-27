@@ -3,7 +3,7 @@
 
 ![](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/manimage.png)
 
-  > ### This project provide simple control GUI used to control Redox Flow Battery cell this project is a combination of hardware and software, a python code will be used as a controlling software.
+  > ### This project provides simple control GUI used to control Redox Flow Battery cell, this project is a combination of hardware and software, python is used as a controlling software..
 
 ---
 <img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg" alt="gui" width="450"/>
@@ -22,13 +22,13 @@
 * ## Description 
 
    This is the source code for the [`redox flow battery`](https://en.wikipedia.org/wiki/Flow_battery) `GUI`,
-  the `GUI` is built using python version of `Qt5`  [**`pyside2`**](https://doc.qt.io/qtforpython/index.html), the system consists
+  the `GUI` is built using the python version of `Qt5`  [**`pyside2`**](https://doc.qt.io/qtforpython/index.html), the system consists
    of the `cell itself`, `Shenchen Peristaltic Pump`,
-   the `GUI` provide speed control, start/stop, and direction and Modbus sender.
+   the `GUI` provides speed control, start/stop, direction, and Modbus sender.
    the program handles all required Modbus communication via USB port.   
 ---
 * ## Start
-    Download the repository, run the `__main__` python file which contain the main GUI.
+    Download the repository, run the `__main__` python file which contains the main GUI.
 ---
 * ## Packages
 
