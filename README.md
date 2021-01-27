@@ -6,7 +6,8 @@
   > ### This project aims to provide a full operation system, this project is a combination of hardware and software, a python code will be used as a controlling software.
 
 ---
-
+![pump](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg | width=100)
+---
 ### Table of Contents
 * Description
 * Quick Start
