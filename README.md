@@ -1,7 +1,7 @@
 # Redox Flow Battery Control System
 
 
-![](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/mainimage.png)
+![](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/manimage.png)
 
   > ### This project aims to provide a full operation system, this project is a combination of hardware and software, a python code will be used as a controlling software.
 
@@ -26,7 +26,7 @@
    the basic connection of the hardware, and the python code associated with it, and the method that has been used,
     however it will not explain the technical part of the Redox Flow battery.   
 ---
-* ## Quick Start
+* ## Start
     after downloading the repository, run the __main__ python file which contain the main GUI.
 ---        
 
@@ -51,7 +51,7 @@ synchronous system).
   
 ---
   * ### NI6001
-     the National Instruments USB-6001/6002/6003 data acquisition (DAQ) devices. The NI-DAQmx Python where used, nidaqmx can be installed with pip:
+     the National Instruments USB-6001/6002/6003 data acquisition '(DAQ) devices'. The NI-DAQmx Python where used, nidaqmx can be installed with pip:
     
     $ python -m pip install nidaqmx,
      
@@ -67,11 +67,18 @@ synchronous system).
     [for more information](https://wiki.qt.io/Qt_for_Python)
     
        **Main Dashboard** 
-    ![Main Dashboard](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/icons/pumpgui4.png?raw=true)
+ 
+
+
+  |![pump](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg)|![Main Dashboard](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui4.jpg)|![pump](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg)|![Pump2](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui2.jpg)|
+  |--------------|---------------|---------------|---------------|
+
+  
+
     
-    ![Pump](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/icons/pumpgui2.png?raw=true)
     
-    ![pump](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/icons/pumpgui1.png?raw=true)
+    
+    
  
 
 
