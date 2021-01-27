@@ -3,7 +3,7 @@
 
 ![](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/manimage.png)
 
-  > ### This project aims to provide a full operation system, this project is a combination of hardware and software, a python code will be used as a controlling software.
+  > ### This project provide simple control GUI used to control Redox Flow Battery cell this project is a combination of hardware and software, a python code will be used as a controlling software.
 
 ---
 <img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg" alt="gui" width="450"/>
