@@ -1,4 +1,4 @@
-# Redox Flow Battery Control System
+# Redox Flow Battery Control GUI
 
 
 ![](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/manimage.png)
@@ -6,11 +6,14 @@
   > ### This project aims to provide a full operation system, this project is a combination of hardware and software, a python code will be used as a controlling software.
 
 ---
-![pump](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg | width=100)
+<img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg" alt="gui" width="450"/>
+
 ---
+
 ### Table of Contents
 * Description
-* Quick Start
+* Start
+* required packages
 * Hardware
 * GUI
 
@@ -18,19 +21,27 @@
 ---
 * ## Description 
 
-   This project aims to provide a full operating system for a [redox flow battery](https://en.wikipedia.org/wiki/Flow_battery),
-    the system will be controlled through a GUI,
-  the GUI is built using python version of **Qt5**  [**pyside2**](https://doc.qt.io/qtforpython/index.html), the system consists
-   of the cell itself, Shenchen Peristaltic Pump,
-  [Keithley Instruments Model 2450](https://download.tek.com/manual/2450-900-01_D_May_2015_User_3.pdf) and
-  [NI6001](http://deeea.urv.cat/deeea/images/laboratoris/manuals/ni_usb_6001_users_guide.pdf). the documentation will go through
-   the basic connection of the hardware, and the python code associated with it, and the method that has been used,
-    however it will not explain the technical part of the Redox Flow battery.   
+   This is the source code for the [`redox flow battery`](https://en.wikipedia.org/wiki/Flow_battery) `GUI,,
+  the `GUI` is built using python version of `Qt5`  [**`pyside2`**](https://doc.qt.io/qtforpython/index.html), the system consists
+   of the `cell itself`, `Shenchen Peristaltic Pump`,
+  [`Keithley Instruments Model 2450`](https://download.tek.com/manual/2450-900-01_D_May_2015_User_3.pdf) and
+  [NI6001](http://deeea.urv.cat/deeea/images/laboratoris/manuals/ni_usb_6001_users_guide.pdf). the `GUI` provide speed control, start/stop, and direction, the program handels all requied Modbus communication via usb port.   
 ---
 * ## Start
     after downloading the repository, run the __main__ python file which contain the main GUI.
----        
+---
+* ## Packages
 
+Package        | Version
+---------------|-------
+numpy           |1.19.5|
+pandas          |1.2.0|
+PyQt5           |5.15.2|
+pyqtgraph       |0.11.1|
+pyserial        |3.5|
+PySide2         |5.15.2|
+
+---
 * ## Hardware
   * ### Shenchen Peristaltic Pump
   ![Shenchen Peristaltic Pump](https://www.good-pump.com/uploadfile/load/images/2020/202004/20200407/15/20200407103434z1kzlgic.jpg)
@@ -71,8 +82,12 @@ synchronous system).
  
 
 
-  |![pump](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg)|![Main Dashboard](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui4.jpg)|![pump](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg)|![Pump2](https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui2.jpg)|
-  |--------------|---------------|---------------|---------------|
+
+
+
+  |<img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui1.jpg" alt="gui" width="200"/>)|<img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg" alt="gui" width="200"/>|
+  |<img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui2.jpg" alt="gui" width="200"/>|<img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui4.jpg" alt="gui" width="200"/>|
+  |--------------|---------------|
 
   
 
