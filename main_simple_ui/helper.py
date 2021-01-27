@@ -1,7 +1,13 @@
+import os
+
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMainWindow, QMessageBox
 from serial.tools import list_ports as ports
 from enum import Enum
+
+
+def icon(icon_name, root="icons"):
+    return QIcon(os.path.join(root, icon_name))
 
 
 class PortManger:

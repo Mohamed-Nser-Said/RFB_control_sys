@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QPushButton
 
 
 class Add(QPushButton):
-    def __init__(self, text="Add A Widget", icon=r"../QtIcons/plus.png", text_color='#0f4d14', color='#ced9cf'):
+    def __init__(self, text="Add A Widget", icon="icons/plus.png", text_color='#0f4d14', color='#ced9cf'):
         super().__init__()
         self.text_color = QtGui.QColor(text_color)
         self.text = text
