@@ -4,9 +4,9 @@ from PySide2.QtGui import QIcon, QPalette, QPixmap
 from PySide2 import QtGui, QtWidgets, QtCore
 from PySide2.QtWidgets import QApplication, QHBoxLayout, QMainWindow, QWidget, QGridLayout, QPushButton, QComboBox, \
     QVBoxLayout, QLCDNumber, QLabel, QDoubleSpinBox, QSlider
-from RedoxFlowProject.main_ui.NewWidget import BubbleWidget, Add, NotificationWidget
+from newwidget import BubbleWidget, Add, NotificationWidget
 
-from RedoxFlowProject.main_ui.PumpWidget import PumpWidget
+from pumpgui import PumpWidget, SpeedMonitor
 from enum import Enum
 
 
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
         # self.pump_speed = BubbleWidget(text='Pump Speed')
 
         self.battery_level = BubbleWidget(text='Battery Level')
-        self.temp = BubbleWidget(icon=r"../QtIcons/temperature.png", text='Temperature')
+        self.temp = BubbleWidget(icon="icons/temperature.png", text='Temperature')
         self.liquid_level = BubbleWidget(text='Liquid Level')
 
         # v_layout.addWidget(self.pump_speed)
@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
 
         # self.graphx1 = ToolBar()
         self.PumpWidget = PumpWidget()
-        self.graphx3 = AddWidget()
+        self.graphx3 = SpeedMonitor()
         self.graphx4 = AddWidget()
         self.graphx5 = AddWidget()
         self.Notification = Notification()
@@ -69,8 +69,8 @@ class MainWindow(QMainWindow):
         # self.grid_layout.addWidget(self.graphx1, 0, 0, 1, 4)
 
         self.grid_layout.addWidget(self.PumpWidget, 1, 0)
-        self.grid_layout.addWidget(self.graphx3, 2, 0)
-        self.grid_layout.addWidget(self.graphx4, 1, 1)
+        self.grid_layout.addWidget(self.graphx3, 1, 1)
+        self.grid_layout.addWidget(self.graphx4, 2, 0)
         self.grid_layout.addWidget(self.graphx5, 2, 1)
 
         self.grid_layout.addWidget(self.Notification, 2, 2)
@@ -86,9 +86,5 @@ if __name__ == "__main__":
     app.setStyle('Fusion')
     window = MainWindow()
 
-    # pal = QPalette()
-    # pal.setColor(QPalette.Background, '#d1e3d3')
-    # window.setAutoFillBackground(True)
-    # window.setPalette(pal)
     window.show()
     app.exec_()

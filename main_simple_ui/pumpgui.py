@@ -6,8 +6,8 @@ from PySide2.QtWidgets import QTabWidget, QComboBox, QLineEdit, QSpinBox, QMenu,
 
 from pumpAPI import PumpConnectionManger, find_my_pump, step_increase
 from helper import ErrorMassage, PortManger, ModbusBuilder, CRCGenerator, Pump, IS
-from helper import MasterSend, Type, MasterValues, SecondValues
-from NewWidget import BubbleWidget
+from helper import MasterSend, Type, MasterValues, SecondValues, icon
+from newwidget import BubbleWidget
 import pyqtgraph as pg
 import sys
 import time
@@ -375,7 +375,7 @@ class SettingWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Advance Setting")
-        self.setWindowIcon(QIcon(r"../QtIcons/settings.png"))
+        self.setWindowIcon(icon("settings.png"))
         self.setFixedSize(380, 500)
         self.SecondPumpTab = SecondPumpTab()
 
@@ -420,7 +420,7 @@ class StepIncreaseWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("speed adjusting")
-        self.setWindowIcon(QIcon(r"../QtIcons/settings.png"))
+        self.setWindowIcon(icon("settings.png"))
         self.setFixedSize(300, 300)
 
         layout = QGridLayout()
@@ -516,7 +516,7 @@ class StepIncreaseWindow(QMainWindow):
 class SettingsQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
-        self.setIcon(QIcon(r"../QtIcons/settings.png"))
+        self.setIcon(icon("settings.png"))
         self.setShortcut(QKeySequence("Ctrl+s"))
 
     def button_clicked(self):
@@ -527,7 +527,7 @@ class PowerQPushButton(AbstractQPushButton):
     def __init__(self, send_to):
         super().__init__()
         self.power_button_state = False
-        self.setIcon(QIcon(r"../QtIcons/on.png"))
+        self.setIcon(icon("on.png"))
         self.setCheckable(True)
         self.setChecked(self.power_button_state)
         self.setShortcut(QKeySequence("Space"))
@@ -537,7 +537,7 @@ class PowerQPushButton(AbstractQPushButton):
 
     def button_clicked(self, checked):
         if checked:
-            self.setIcon(QIcon(r"../QtIcons/off.png"))
+            self.setIcon(icon("off.png"))
             self.pumpConnectionManger.send_pump(data=self.modbusBuilder.build_start().get_modbus, send_to=self.send_to)
             if isinstance(self.parent(), PumpMasterWidget):
                 master_state.speed_list.append(self.parent().SpeedQDoubleSpinBox.value())
@@ -550,7 +550,7 @@ class PowerQPushButton(AbstractQPushButton):
                 second_state.speed_list.append(self.parent().SpeedQDoubleSpinBox.value())
                 second_state.start_stop = True
         if not checked:
-            self.setIcon(QIcon(r"../QtIcons/on.png"))
+            self.setIcon(icon("on.png"))
             self.pumpConnectionManger.send_pump(data=self.modbusBuilder.build_stop().get_modbus, send_to=self.send_to)
             if isinstance(self.parent(), PumpMasterWidget):
                 master_state.speed_list.append(0)
@@ -568,7 +568,7 @@ class DirectionQPushButton(AbstractQPushButton):
     def __init__(self, send_to):
         super().__init__()
         self.direction_button_state = False
-        self.setIcon(QIcon(r"../QtIcons/forward.png"))
+        self.setIcon(icon("forward.png"))
         self.setCheckable(True)
         self.setShortcut(QKeySequence("Ctrl+d"))
         self.setChecked(self.direction_button_state)
@@ -579,13 +579,13 @@ class DirectionQPushButton(AbstractQPushButton):
 
     def button_clicked(self, checked):
         if checked:
-            self.setIcon(QIcon(r"../QtIcons/backward.png"))
+            self.setIcon(icon("backward.png"))
             self.pumpConnectionManger.send_pump(
                 data=self.modbusBuilder.build_flow_direction("ccw").get_modbus, send_to=self.send_to)
             master_state.direction = "ccw"
 
         if not checked:
-            self.setIcon(QIcon(r"../QtIcons/forward.png"))
+            self.setIcon(icon("forward.png"))
             self.pumpConnectionManger.send_pump(
                 data=self.modbusBuilder.build_flow_direction("cw").get_modbus, send_to=self.send_to)
             master_state.direction = "cw"
@@ -594,7 +594,7 @@ class DirectionQPushButton(AbstractQPushButton):
 class AddSecondPumpQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
-        self.setIcon(QIcon(r"../QtIcons/two.png"))
+        self.setIcon(icon("two.png"))
         self.setShortcut(QKeySequence("Ctrl+2"))
 
     def button_clicked(self):
@@ -605,7 +605,7 @@ class AddSecondPumpQPushButton(AbstractQPushButton):
 class AddMasterPumpQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
-        self.setIcon(QIcon(r"../QtIcons/one.png"))
+        self.setIcon(icon("one.png"))
         self.setShortcut(QKeySequence("Ctrl+1"))
 
     def button_clicked(self):
@@ -615,7 +615,7 @@ class AddMasterPumpQPushButton(AbstractQPushButton):
 class AddMonitorQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
-        self.setIcon(QIcon(r"../QtIcons/line-graph.png"))
+        self.setIcon(icon("line-graph.png"))
         self.setShortcut(QKeySequence("Ctrl+m"))
 
     def button_clicked(self):
@@ -625,7 +625,7 @@ class AddMonitorQPushButton(AbstractQPushButton):
 class MergeQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
-        self.setIcon(QIcon(r"../QtIcons/merging.png"))
+        self.setIcon(icon("merging.png"))
 
     def button_clicked(self):
         self.parent().SpeedQDoubleSpinBox.setValue(master_state.speed)
@@ -634,7 +634,7 @@ class MergeQPushButton(AbstractQPushButton):
 class StepIncreaseQPushButton(AbstractQPushButton):
     def __init__(self):
         super().__init__()
-        self.setIcon(QIcon(r"../QtIcons/stepincrease.png"))
+        self.setIcon(icon("stepincrease.png"))
         self.StepIncreaseWindow = StepIncreaseWindow()
         self.setShortcut(QKeySequence("Ctrl+t"))
 
@@ -650,7 +650,7 @@ class CloseQPushButton(QPushButton):
             QSizePolicy.Fixed,
             QSizePolicy.Fixed,
         )
-        self.setIcon(QIcon(r"../QtIcons/close.png"))
+        self.setIcon(icon("close.png"))
 
     def sizeHint(self):
         return QSize(25, 25)
@@ -664,7 +664,7 @@ class InfoQPushButton(QPushButton):
     def __init__(self):
         super().__init__()
         self.clicked.connect(self.button_clicked)
-        self.setIcon(QIcon(r"../QtIcons/help.png"))
+        self.setIcon(icon("help.png"))
         self.setSizePolicy(
             QSizePolicy.Fixed,
             QSizePolicy.Fixed,
@@ -683,7 +683,7 @@ class ExternalQPushButton(QPushButton):
     def __init__(self):
         super().__init__()
         self.clicked.connect(self.button_clicked)
-        self.setIcon(QIcon(r"../QtIcons/external.png"))
+        self.setIcon(icon("external.png"))
         self.setSizePolicy(
             QSizePolicy.Fixed,
             QSizePolicy.Fixed,
@@ -940,7 +940,7 @@ class PumpMainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
-    window = PumpMainWindow()
+    window = PumpWidget()
 
     # qtmodern.styles.dark(app)
     # mw = qtmodern.windows.ModernWindow(window)
