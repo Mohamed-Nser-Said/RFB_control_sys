@@ -43,20 +43,10 @@ PySide2         |5.15.2|
     
     
 # **Main Dashboard** 
- <img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui4.jpg" alt="gui" width="400"/>
+ <img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui4.jpg" alt="gui" width="200"/>
 
 # **Pump GUI** 
-<img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg" alt="gui" width="200"/>   <img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui2.jpg" alt="gui" width="200"/>   
-
-<img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui7.jpg" alt="gui" width="200"/>
-
-# **Setting panel**
-<img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui5.jpg" alt="gui" width="200"/>  
-
-# **ModBus Sender**
-
-
-<img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui6.jpg" alt="gui" width="200"/>
+<img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui3.jpg" alt="gui" width="200"/>   <img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui2.jpg" alt="gui" width="200"/>   <img src="https://github.com/Mohamed-Nser-Said/RFB_control_sys/blob/master/main_simple_ui/icons/pumpgui6.jpg" alt="gui" width="200"/>
 
 
   
