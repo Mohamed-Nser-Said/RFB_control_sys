@@ -1,4 +1,4 @@
-from PySide2.QtCore import QSize, Qt, QThreadPool, QRunnable, Slot, QRect, QTimer
+from PySide2.QtCore import QSize, Qt, QThreadPool,Slot, QRunnable, QRect, QTimer
 from PySide2.QtGui import QIcon, QKeySequence, QColor, QPainter, QBrush, QPainterPath
 from PySide2.QtWidgets import QApplication, QDoubleSpinBox, QGridLayout, QSizePolicy
 from PySide2.QtWidgets import QMainWindow, QWidget, QPushButton, QHBoxLayout, QSlider, QLabel, QVBoxLayout
